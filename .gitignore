@@ -9,6 +9,7 @@ PWCNet/pwc_net.pth.tar
 MegaDepth/checkpoints/*
 model_weights/*
 MiddleBurySet/*
+video_output/*
 
 .nfs*
 

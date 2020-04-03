@@ -8,11 +8,12 @@ import random
 import numpy as np
 import numpy
 import networks
-from my_args import  args
 
 from scipy.misc import imread, imsave
 from AverageMeter import  *
 
+from my_args import get_DAIN_parser
+args = get_DAIN_parser().parse_args()
 torch.backends.cudnn.benchmark = True # to speed up the
 
 

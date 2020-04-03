@@ -13,9 +13,8 @@ from loss_function import *
 import datasets
 import balancedsampler
 import networks
-from my_args import args
-
-
+from my_args import parse_training_args
+args = parse_training_args()
 
 def train():
     torch.manual_seed(args.seed)
