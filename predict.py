@@ -165,6 +165,7 @@ def process_video(model, video_filepath, args):
                 for out_frame in y_:
                     video_out.write(np.round(out_frame).astype(np.uint8)[..., (2,1,0)])
             pre_frame = frame
+            video_out.write(frame[..., (2,1,0)]) # BGR to RGB back
         except KeyboardInterrupt:
             break
     video_in.release()
