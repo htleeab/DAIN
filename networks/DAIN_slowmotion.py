@@ -209,8 +209,15 @@ class DAIN_slowmotion(torch.nn.Module):
             time_offsets = [time_offsets]
         elif type(time_offsets) == list:
             pass
-        temp = model(input)  # this is a single direction motion results, but not a bidirectional one
 
+        WORKAROUND = True
+        if not WORKAROUND:
+            temp = model(input)  # this is a single direction motion results, but not a bidirectional one
+        else:
+            # quick workaround of drifting inwards, link: https://github.com/baowenbo/DAIN/issues/51
+            im1 = input[:,:3,:,:]
+            drift = model(torch.cat([im1, im1], dim=1))
+            temp = model(input) - drift
         temps = [self.div_flow * temp * time_offset for time_offset in time_offsets]# single direction to bidirection should haven it.
         temps = [nn.Upsample(scale_factor=4, mode='bilinear')(temp)  for temp in temps]# nearest interpolation won't be better i think
         return temps
