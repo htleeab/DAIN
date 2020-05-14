@@ -32,6 +32,9 @@ def parse_args():
     if args.gen_video:
         assert args.video_input_filepath is not None and os.path.exists(args.video_input_filepath), f'video input {args.video_input_filepath} is not exist'
         os.makedirs(args.video_output_dir, exist_ok=True)
+    if args.SAVED_MODEL is None:
+        print('no pre-trained model input, set default as "./model_weights/best.pth". Could change via option --pretrained')
+        args.SAVED_MODEL = './model_weights/best.pth'
     return args
 
 def load_model(args):
@@ -43,7 +46,6 @@ def load_model(args):
     if args.use_cuda:
         model = model.cuda()
 
-    args.SAVED_MODEL = './model_weights/best.pth'
     if os.path.exists(args.SAVED_MODEL):
         print("The testing model weight is: " + args.SAVED_MODEL)
         if not args.use_cuda:
