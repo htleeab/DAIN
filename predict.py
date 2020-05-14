@@ -1,3 +1,8 @@
+'''
+If video enabled, convert video to double fps
+If video disabled, run slow motion on frame 10 and 11 in MiddleBury dataset
+'''
+
 import time
 import os
 import shutil
@@ -19,6 +24,7 @@ MB_Other_RESULT = "./MiddleBurySet/other-result-author/"
 
 def parse_args():
     parser = get_DAIN_parser()
+    # Video options
     parser.add_argument('-v', '--video', dest='gen_video', action='store_true', help='Generate video, otherwise process frame 10 and 11 in MiddleBury dataset')
     parser.add_argument('--video_input', dest='video_input_filepath', type=str, help='video_input')
     parser.add_argument('--video_output_dir', dest='video_output_dir', default='video_output', type=str, help='video output folder')
@@ -62,7 +68,7 @@ def load_model(args):
     model = model.eval() # deploy mode
     return model
 
-def frame_interpolation_2_frames(img_first, img_second, use_cuda, save_which, dtype):
+def frame_interpolation_2_frames(model, img_first, img_second, use_cuda, save_which, dtype):
     start_time = time.time()
 
     # initialize tensor of input & output
@@ -160,7 +166,7 @@ def process_video(model, video_filepath, args):
             res, frame = video_in.read()
             frame = frame[..., (2,1,0)] # BGR to RGB
             if pre_frame is not None:
-                y_ = frame_interpolation_2_frames(pre_frame, frame, args.use_cuda, args.save_which, args.dtype)
+                y_ = frame_interpolation_2_frames(model, pre_frame, frame, args.use_cuda, args.save_which, args.dtype)
                 assert y_ is not None
                 for out_frame in y_:
                     video_out.write(np.round(out_frame).astype(np.uint8)[..., (2,1,0)])
@@ -192,7 +198,7 @@ if __name__ == '__main__':
             arguments_strSecond = os.path.join(MB_Other_DATA, cur_dir, "frame11.png")
             img_first = imread(arguments_strFirst)
             img_second = imread(arguments_strSecond)
-            y_ = frame_interpolation_2_frames(img_first, img_second, args.use_cuda, args.save_which, args.dtype)
+            y_ = frame_interpolation_2_frames(model, img_first, img_second, args.use_cuda, args.save_which, args.dtype)
             if y_ is None:
                 continue
 
